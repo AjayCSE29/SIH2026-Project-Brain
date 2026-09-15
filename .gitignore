@@ -1,0 +1,32 @@
+# Datasets (very large, do not track)
+data/
+*.bin
+*.label
+*.ply
+*.pcd
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Bench / output artifacts
+bench/results/*.png
+bench/results/*.pdf
+bench/results/*.mp4
+assets/*.mp4
+assets/*.avi
+assets/*.gif
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
