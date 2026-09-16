@@ -23,6 +23,12 @@ SIH 2026 DRDO PS SIH26053: "Adaptive Variable Resolution 2.5D LiDAR Mapping for 
 | Architecture, tech stack, roadmap | `research/08-architecture/` |
 | Open decisions, research log | `research/09-notes/` |
 
+## Canonical Perception Architecture (2026-09-16)
+- **SPVCNN (primary backbone)** → **adaptive 2.5D aggregation** → **selective SVM cell-level refinement**.
+- The SVM is a cell-level refinement mechanism (initial task: drivability classification on uncertain/ambiguous/safety-critical cells). It is **NOT a pointwise replacement for SPVCNN** and should **NOT be run indiscriminately across all LiDAR points/cells** unless an experiment explicitly evaluates that configuration.
+- Rule-based drivability (slope + semantic thresholds) must remain available as a baseline and fallback.
+- The core innovation is the adaptive semantic 2.5D representation; SVM is a supporting, removable enhancement.
+
 ## Do / Don't
 - **Do:** Append to `research/09-notes/research-log.md` with dated entries after any research or decision.
 - **Do:** Update `CONTEXT.md` status section after every working session that changes project state.
@@ -35,8 +41,8 @@ SIH 2026 DRDO PS SIH26053: "Adaptive Variable Resolution 2.5D LiDAR Mapping for 
 
 ## Tech Stack Convention
 Python-first, optimize later:
-- Prototyping: Python, NumPy, PyTorch
-- Segmentation: MinkUNet/SPVCNN via spconv/torchsparse
+- Prototyping: Python, NumPy, PyTorch, scikit-learn (SVC/LinearSVC for cell-level SVM)
+- Segmentation: **SPVCNN default** (canonical) via torchsparse; SPVNAS/MinkUNet as alternatives
 - Grid engine: NumPy → CuPy/Numba when perf-critical
 - Visualization: Open3D, Python
 - Edge deployment: Numba/CuPy kernels; C++/CUDA only if proven needed

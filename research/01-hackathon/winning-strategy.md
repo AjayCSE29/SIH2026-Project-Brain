@@ -16,6 +16,11 @@ Instead of "another semantic segmentation model," pitch it as a **representation
 
 This matches DRDO language (edge compute, cheap grids, mission robots).
 
+**Innovation hierarchy (2026-09-16):**
+- **CORE INNOVATION:** the adaptive semantic 2.5D representation (spatial adaptivity — resolution as a function of distance, semantic importance, complexity, uncertainty, motion).
+- **SUPPORTING INNOVATION:** selective SVM refinement for uncertain/safety-critical cells (computational/classification adaptivity — spend additional compute only where needed).
+- The project is a **resource-aware / adaptive perception system**, not merely "a LiDAR segmentation system." Do NOT make the SVM the headline.
+
 ## Novelty Hooks
 1. **Foveated resolution policy** gated on (distance × semantic importance × motion) — not just distance.
 2. **Semantic-aware drivability** — cell traversable only if ground AND semantic-safe (no static obstacle conflict).
@@ -40,6 +45,8 @@ This matches DRDO language (edge compute, cheap grids, mission robots).
 - Training models from scratch with poor compute budget — use pretrained, fine-tune if needed.
 - AI-generated video/PPT content (forbidden per SIH rules).
 - Claiming "autonomy/realtime on Jetson" without running it.
+- Claiming SVM "improves" anything before it is measured (idea-submission stage = **proposed/planned/to be evaluated** language only).
+- Over-committing the SVM: if experiments show no gain / high latency / poor scalability, the SVM can be dropped or reduced without breaking the core system.
 
 ## Roadmap Fit
 Our 13-step roadmap (see `08-architecture/development-roadmap.md`) is built in priority order so the demo-ready core exists by October screening.

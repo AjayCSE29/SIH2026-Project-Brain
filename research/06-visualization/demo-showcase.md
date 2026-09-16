@@ -13,6 +13,25 @@
 5. **Numbers panel (live):** cells used vs uniform-0.1m grid (count ratio), ms/scan pipeline, memory MB. *Numbers only from **our** benchmarks — never fabricate.*
 6. **Bonus (if time):** CARLA live loop — ego vehicle drives, pedestrian is spawned, semantic+lidar stream feeds the same grid in real time (checks the "dynamic environment" title).
 
+## Optional demo beat — selective SVM refinement (added 2026-09-16)
+Extend the narrative (only if the SVM study shows it is worthwhile; see `svm-refinement-study.md`):
+1. Raw LiDAR
+2. SPVCNN semantic interpretation
+3. Adaptive grid appears (core innovation — always the anchor)
+4. **Uncertain region highlighted** (gate flags uncertain/safety-critical cells)
+5. **Selective SVM refinement occurs** on those cells only (overlay: per-cell "SVM invoked" marker)
+6. Drivability state refines / becomes more confident
+7. Dynamic/static state shown
+8. Efficiency metrics displayed (incl. **SVM invocation %** + added latency)
+
+**No fake "AI inference" animations.** The SIH demo must be based on real implementation output.
+If the SVM is not yet fast enough for live execution, it is acceptable to:
+- cache model outputs,
+- demonstrate the real pipeline offline,
+- clearly label precomputed/recorded inference.
+
+Do NOT claim real-time SVM unless it has been benchmarked.
+
 ## Recording logistics
 - Use **OBS / GPU screen record** to capture Open3D + matplotlib panels in sync.
 - Keep it < ~3-4 min for the portal video limit; strong captioning (many judges watch muted).

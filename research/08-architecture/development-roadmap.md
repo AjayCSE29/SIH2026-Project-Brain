@@ -30,23 +30,33 @@
 9. **Temporal / dynamics updates**
    - Persistence + decay per cell → static/dynamic classification with class-aware rates; GT-vs-grid IOU measurement hooks. (2–3 days.)
 
-10. **Terrain drivability**
-    - Slope from DEM neighbors + clearance (obstacle_height) → DRIVABLE/MARGINAL/BLOCKED; uses GroundGrid-inspired filter. (1–2 days.)
+10. **Terrain drivability (rule-based baseline)**
+    - Slope from DEM neighbors + clearance (obstacle_height) → DRIVABLE/MARGINAL/BLOCKED; uses GroundGrid-inspired filter. This is **BASELINE A/B**; keep it available as fallback. (1–2 days.)
 
-11. **Visualization**
-    - Open3D overlay: class / elevation / drivability / resolution toggles; matplotlib heatmaps saved to `assets/` for PPT. (1 day.)
+11. **Cell feature extraction + drivability classifier study** *(new — 2026-09-16, see `svm-refinement-study.md`)*
+    - Construct cell-level feature matrices (geometric/semantic/spatial/temporal/uncertainty candidates).
+    - Establish rule-based drivability baseline (rules, step 10).
+    - Create train/validation/test splits **by sequence** (avoid cell-level leakage; align with SemanticKITTI protocol).
+    - Evaluate simple linear SVM (scikit-learn `LinearSVC` first).
+    - Evaluate selective gating (uncertain/safety-critical cells only).
+    - Benchmark added latency and drivability quality (F1, blocked recall, false-drivable rate).
+    - Run ablations (spatial policy A–E; SVM feature sets A–D).
+    - Guardrail: SVM is a research direction; if it adds no value or latency, it may be removed. (3–5 days.)
 
-12. **Benchmarks**
-    - `bench/run_bench.py` A/B/C (uniform / fove-static / fove-adapt) against metrics.md → JSON+plots. (2 days.)
+12. **Visualization**
+    - Open3D overlay: class / elevation / drivability / resolution toggles; matplotlib heatmaps saved to `assets/` for PPT. Optionally highlight uncertain regions + SVM-refined calls for the demo narrative. (1 day.)
 
-13. **CARLA demo + SIH package**
+13. **Benchmarks**
+    - `bench/run_bench.py` grid axis A/B/C (uniform / fove-static / fove-adapt) + drivability axis D0–D3 against `metrics.md` → JSON+plots. (2 days.)
+
+14. **CARLA demo + SIH package**
     - CARLA loop: ego + pedestrian crossing → feed same pipeline live → 3-min recording; assemble PPT + demo video (NO AI-generated) + GitHub README with reproduction steps. (3–5 days.)
 
 ## Milestone gates
 - M1 (by ~Oct 7): Steps 1–5 done, uniform grid + GT labels demo.
 - M2 (by ~Oct 14): Steps 6–8 done → variable-resolution core + numbers.
-- M3 (by ~Oct 21): Steps 9–11 → dynamics + drivability + viz complete.
-- M4 (by ~Oct 28): Steps 12–13 → bench table + CARLA reel + submission package ready for national screening.
+- M3 (by ~Oct 21): Steps 9–11 → dynamics + rule-based drivability + SVM study (if SVM proves worthwhile) + viz.
+- M4 (by ~Oct 28): Steps 12–14 → bench table + CARLA reel + submission package ready for national screening.
 
 (Re-align official deadlines dates from the portal before planning sprints.)
 
@@ -54,7 +64,8 @@
 - Download/bandwidth for 80GB velodyne — start early, use symlinks, or subset seq 08 only if bandwidth-limited.
 - torchsparse wheel availability for our Python/torch — pin known-good combo early.
 - CARLA GPU requirement — have a Vulkan-capable machine for the sim demo; else fall back to KITTI-only demo.
+- SVM study (step 11) is an experiment: if no accuracy gain / unacceptable latency / poor scalability, drop or reduce SVM — the core system must not depend on it.
 
 ## Sources
-- Roadmap original: `MAIN-CONTEXT.md` §29.
-- Added feasibility notes: semantickitti.md, pretrained-zoo.md, benchmark-plan.md.
+- Roadmap original: `MAIN-CONTEXT.md` §29 (+ §31 architecture update).
+- Added feasibility notes: semantickitti.md, pretrained-zoo.md, benchmark-plan.md, svm-refinement-study.md.

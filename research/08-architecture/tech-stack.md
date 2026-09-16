@@ -3,14 +3,22 @@
 ## Core languages / libs (Python-first)
 - **Python 3.10+**
 - **NumPy** — grid + preprocessing.
-- **PyTorch** — segmentation model.
+- **PyTorch** — segmentation model (SPVCNN default backbone).
 - **Open3D** — I/O, viz, RANSAC.
+- **scikit-learn** — cell-level SVM (`SVC` / `LinearSVC`) for selective drivability refinement.
 - **CuPy / Numba** (optional later) — hot-grid GPU.
 - **pandas/matplotlib** — bench stats + plots (lightweight).
 
+## SVM refinement (cell-level, scikit-learn)
+- Implementation: `sklearn.svm.LinearSVC` / `SVC` / equivalent — **only after evaluating scalability and feature dimensionality.**
+- Initial research assumption: **prefer a linear or computationally cheap SVM formulation** for scalability with large numbers of cells.
+- Evaluate `LinearSVC` and `SVC` with an appropriate kernel **only if dataset scale is manageable**. Do NOT default to an expensive nonlinear SVM.
+- Kernel choice is an experimental decision, not a preset.
+- The SVM operates on derived cell-level features (see `07-benchmarking/svm-refinement-study.md`), never on raw LiDAR.
+
 ## Segmentation runtime
-- Primary: **SPVCNN/SPVNAS** via torchsparse (pretrained on SemanticKITTI). Repo: `mit-han-lab/spvnas`.
-- Alt: MinkUNet via MinkowskiEngine; SalsaNext CPU index if needed (edge demo).
+- Primary: **SPVCNN (canonical default)** via torchsparse (pretrained on SemanticKITTI). Repo: `mit-han-lab/spvnas`.
+- Alt: SPVNAS, MinkUNet via MinkowskiEngine; SalsaNext CPU index if needed (edge demo). Wait: SPVNAS/SPVCNN ships in the spvnas repo (torchsparse-based); treat MinkUNet as the MinkowskiEngine alternative.
 - GPU: CUDA (test on `nvidia-smi`; CI may be CPU-only).
 
 ## CARLA
@@ -27,10 +35,12 @@ sih-26053/
 ├── src/
 │   ├── dataloaders/   (kitti.py, carla_client.py)
 │   ├── preprocess/
-│   ├── segmentation/  (seg wrapper around spvnas)
-│   ├── grid/          (cells, adaptive policy)
+│   ├── segmentation/  (SPVCNN wrapper around spvnas repo)
+│   ├── grid/          (cells, adaptive policy, feature_builder)
+│   ├── gate/          (selective refinement gate)
+│   ├── svm/           (cell-level drivability SVM, scikit-learn)
 │   ├── dynamics/      (temporal persistence)
-│   ├── terrain/       (slope/drivability)
+│   ├── terrain/       (slope/drivability rules baseline)
 │   └── viz/
 ├── bench/            (run_bench.py, plots.py, results/)
 ├── data/             (gitignored symlinks to datasets)

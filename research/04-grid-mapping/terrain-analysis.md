@@ -46,3 +46,22 @@ Also expose `elevation`, `slope`, `obstacle_height`.
 - GroundGrid repo: https://github.com/dcmlr/groundgrid
 - Open3D `segment_plane`: https://www.open3d.org/docs/latest/python_api/open3d.geometry.PointCloud.html#open3d.geometry.PointCloud.segment_plane
 - TRAVEL ground segmentation (Zhang et al., 2019): https://arxiv.org/abs/1905.05689
+
+---
+
+## Update 2026-09-16 — Selective SVM refinement (proposed, supersedes part of this doc)
+
+**Superseding note.** Earlier content above ("Approaches") describes terrain classification via slope + semantic thresholds — this framing remains valid as the **rule-based baseline (BASELINE A)** and the **semantic-prior variant (BASELINE B)**. It is NO LONGER the final/only classifier in the canonical architecture.
+
+**Proposed addition (canonical, per `svm-refinement-study.md`):**
+
+| Label | Method |
+|-------|--------|
+| BASELINE A | Rule-based drivability (slope + elevation thresholds, GroundGrid/RANSAC-informed) |
+| BASELINE B | SPVCNN semantics + rule-based drivability |
+| PROPOSED | SPVCNN features + geometric/semantic/temporal cell features + **selective SVM refinement** |
+
+- The SVM is a **cell-level** classifier for drivability (`DRIVABLE / MARGINAL / BLOCKED`), invoked only on uncertain/ambiguous/safety-critical cells via a gate.
+- Drivability combines semantic safety + terrain/elevation + local slope + clearance/obstacle height + (optionally) temporal info.
+- Rule-based terrain logic remains the fallback and the comparison baseline — it must stay available.
+- No SVM-superiority claim is made before measurement.

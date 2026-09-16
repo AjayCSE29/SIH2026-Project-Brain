@@ -32,3 +32,16 @@ OpenPCDet (open-mmlab) implements many SOTA LiDAR 3D detectors on KITTI/Waymo/nu
 - PV-RCNN: https://arxiv.org/abs/1912.13192
 - PointPillars: https://arxiv.org/abs/1812.05784
 - SECOND: https://www.mdpi.com/1424-8220/18/10/3337
+
+---
+
+## Status note 2026-09-16 — remains optional / secondary / future
+
+OpenPCDet / explicit 3D bounding-box detection stays **OUT of the core architecture**:
+- optional, secondary, future extension; introduced ONLY if required by experiments or the PS.
+- NOT a mandatory dependency.
+- Static/dynamic reasoning is supported without detection, via:
+  - temporal persistence,
+  - semantic classes,
+  - per-cell temporal evidence (see `system-architecture.md` dynamics module).
+The earlier "Fit for Our PS" text above is consistent with this; treat it as reaffirmed rather than revised.

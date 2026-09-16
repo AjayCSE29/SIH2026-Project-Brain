@@ -24,6 +24,19 @@ s = f(distance, importance, complexity, uncertainty, motion)
 - uncertainty: cell shrinks when the local estimate is uncertain/evidence low (adaptive resolution driven by sensor-model inverse).
 - motion: shrinking for freshly-changed (dynamic) cells → re-measured at high res.
 
+## Two Forms of Adaptivity (2026-09-16)
+
+The project combines two resource-aware dimensions — this is the unified philosophy:
+
+**A. SPATIAL ADAPTIVITY** — where do we allocate spatial resolution?
+- Controlled by: distance, semantic importance, scene complexity, uncertainty, motion.
+
+**B. COMPUTATIONAL / CLASSIFICATION ADAPTIVITY** — where do we spend additional classification effort?
+- Controlled by: uncertainty, semantic ambiguity, safety criticality, local geometric complexity, temporal instability.
+- Implemented as the **selective SVM gate** (cell-level drivability refinement on uncertain/safety-critical cells; see `07-benchmarking/svm-refinement-study.md`).
+
+Together: *"Do not spend equal computational resources everywhere."* The project is therefore a **resource-aware / adaptive perception system**, not merely a LiDAR segmentation system. The SVM gate is the computational twin of foveation.
+
 ## Update Mechanics
 - Incremental: mailbox per updated cell; neighboring cells in higher-res regions inherit parent stats on split.
 - Split/merge: leaf size between `[smin, smax]`; splitting when evidence passes threshold, merging when evidence fades (temporal decay).

@@ -36,3 +36,16 @@ Repo: https://github.com/mit-han-lab/spvnas — provides training + pretrained c
 - SPVNAS repo: https://github.com/mit-han-lab/spvnas
 - SPVNAS paper: https://arxiv.org/abs/2007.16100
 - SemanticKITTI API for dataset I/O: https://github.com/PRBonn/semantic-kitti-api
+
+---
+
+## Update 2026-09-16 — SPVCNN is the canonical default backbone (supersedes part of this doc)
+
+**Superseding note.** Earlier content above frames the segmentation backend as "SPVCNN/SPVNAS or MinkUNet". The canonical architecture now names **SPVCNN as the default primary perception backbone**; the other models remain alternatives/benchmarks only.
+
+Role boundaries:
+- **SPVCNN responsibilities:** point-level semantic understanding, learned feature extraction, initial semantic prediction.
+- **NOT SPVCNN:** final terrain reasoning, final adaptive-grid reasoning, final static/dynamic classification, final drivability classification — these belong to downstream components (grid engine, dynamics, terrain/SVM modules).
+- The cell-level SVM (see `07-benchmarking/svm-refinement-study.md`) operates on features derived after adaptive 2.5D aggregation and does NOT replace or preempt SPVCNN point semantics.
+
+Keep the pretrained checkpoints/table above as-is (SPVNAS/MinkUNet remain valid benchmark rows).

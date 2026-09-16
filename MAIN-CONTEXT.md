@@ -1321,3 +1321,55 @@ A concise definition of the entire project is:
 > **A real-time semantic LiDAR mapping system that dynamically allocates spatial resolution according to distance and scene importance, producing a compact 2.5D elevation-and-semantic representation that preserves navigation-critical information while reducing memory usage, latency, and computational load.**
 
 This is the current conceptual direction for SIH26053.
+
+---
+
+# 31. Architecture Update — 2026-09-16
+
+> Appended note. Do NOT delete or rewrite the earlier sections; this records the canonical architecture adopted after initial research and supersedes specific earlier statements noted below.
+
+## 31.1 Canonical Perception Architecture
+
+```
+RAW LiDAR
+    ↓
+PREPROCESSING
+    ↓
+SPVCNN SEMANTIC PERCEPTION (primary backbone)
+    ∣  point semantics        ∣  learned features
+    └─────────────┬───────────┘
+                  ↓
+ADAPTIVE 2.5D GRID AGGREGATION (core innovation)
+                  ↓
+        CELL FEATURE VECTOR
+                  ↓
+        GATE (uncertain / safety-critical?)
+      ├─ confident/normal → retain primary classification
+      └─ uncertain/safety-critical → SVM refinement (cell-level)
+                  ↓
+          FINAL CELL STATE
+          /     |       \
+     semantics terrain  dynamics
+```
+
+## 31.2 What This Supersedes
+
+- **Supersedes (in §8 & §22 diagrams):** the final-classification stage is no longer implied to be only "segmentation → map". Downstream adaptive mapping + selective cell-level reasoning now produce the final state.
+- **Supersedes (in §3A / §26 "Terrain classification"):** terrain/drivability classification is no longer just slope+semantic thresholds as the final classifier. Rule-based classification **remains the baseline**, but the proposed architecture adds **selective SVM refinement at the 2.5D cell level** for uncertain/safety-critical drivability decisions.
+- **Supersedes (§7.1 "Deep Learning Model"):** SPVCNN is now the **named default primary backbone** (point semantics + learned features). PointNet++ remains listed by the PS and is kept as a baseline/alternative.
+
+All earlier text remains valid as historical context; where it conflicts with §31, §31 governs going forward.
+
+## 31.3 Role Boundaries (do not blur)
+
+- SPVCNN does NOT perform: final terrain reasoning, final adaptive-grid reasoning, final static/dynamic classification, final drivability classification.
+- Those belong to downstream components (grid engine, dynamics, terrain/SVM modules).
+- The SVM does NOT replace SPVCNN and is NOT applied to every point/cell.
+
+## 31.4 Roadmap note (§29)
+
+The §29 Immediate Development Plan (Steps 1–13) remains intact. The supporting roadmap in `research/08-architecture/development-roadmap.md` now inserts a dedicated step after rule-based drivability: **"Cell feature extraction + drivability classifier study"** (feature matrix construction, rule-based baseline, sequence-level splits, linear SVM evaluation, selective gating, latency/quality benchmarks, ablation). This keeps the drivability-classifier study inside the existing roadmap logic rather than adding a parallel track.
+
+## 31.5 Status language
+
+The SPVCNN + SVM design is **proposed / planned / to be evaluated**. No claims of improvement are made and NO IMPLEMENTATION CODE HAS BEEN WRITTEN at the time of this note.

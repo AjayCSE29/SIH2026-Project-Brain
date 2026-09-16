@@ -1,3 +1,6 @@
+# Flat .md mirror (allfiles)
+allfiles/
+
 # Datasets (very large, do not track)
 data/
 *.bin
